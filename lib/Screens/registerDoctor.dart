@@ -1,3 +1,5 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:first_version/Screens/mainScreen.dart';
 import 'package:first_version/Screens/signUp.dart';
 import 'package:first_version/Screens/signin.dart';
 import 'package:first_version/widget/widget.dart';
@@ -9,17 +11,19 @@ class SignUpDoctor extends StatefulWidget {
 }
 
 class _SignUpDoctorState extends State<SignUpDoctor> {
-
   final formkey = GlobalKey<FormState>();
-  TextEditingController emailTextEditing = TextEditingController();
-  TextEditingController passwordTextEditing = TextEditingController();
+  TextEditingController _emailTextEditingController = TextEditingController();
+  TextEditingController _passwordTextEditingController =
+      TextEditingController();
+  TextEditingController _phoneTextEditingController = TextEditingController();
 
+  var currentUser;
   String gender = 'Select';
 
-  void validate(){
-    if(formkey.currentState.validate()){
+  void validate() {
+    if (formkey.currentState.validate()) {
       print('gg');
-    }else{
+    } else {
       print('not gg');
     }
   }
@@ -28,7 +32,7 @@ class _SignUpDoctorState extends State<SignUpDoctor> {
   Widget build(BuildContext context) {
     return Container(
       child: Padding(
-        padding: const EdgeInsets.only(top:40,bottom: 40),
+        padding: const EdgeInsets.only(top: 40, bottom: 40),
         child: ListView(
           physics: NeverScrollableScrollPhysics(),
           children: [
@@ -48,116 +52,128 @@ class _SignUpDoctorState extends State<SignUpDoctor> {
 //                    offset: Offset(0.5, 0.5), // shadow direction: bottom right
 //                  )
 //                ],
-              ),
+                ),
 //              child:
-              Column(
+            Column(
 //               mainAxisSize: MainAxisSize.max,
-                children: [
+              children: [
 //                  SizedBox(height: 25),
-                  Form(
-                    key: formkey,
-                    child: Column(
-                      children: [
-                        Container(
-                          padding: EdgeInsets.only(right: 10,left: 10),
-                          // Email text field
-                          child: TextFormField(
-                            validator: (val){
-                              return RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-                                  .hasMatch(val) ? null :'email not valid' ;
-                            },
-                            controller: emailTextEditing,
-                            style: simpleTextStyle(),
-                            decoration: textFieldInputDecoration('Email', 'Email'),
-                            keyboardType: TextInputType.emailAddress,
-                          ),
+                Form(
+                  key: formkey,
+                  child: Column(
+                    children: [
+                      Container(
+                        padding: EdgeInsets.only(right: 10, left: 10),
+                        // Email text field
+                        child: TextFormField(
+                          validator: (val) {
+                            return RegExp(
+                                        r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                                    .hasMatch(val)
+                                ? null
+                                : 'email not valid';
+                          },
+                          controller: _emailTextEditingController,
+                          style: simpleTextStyle(),
+                          decoration:
+                              textFieldInputDecoration('Email', 'Email'),
+                          keyboardType: TextInputType.emailAddress,
                         ),
+                      ),
 
-                        // Password text field
-                        Container(
-                          padding: EdgeInsets.only(top: 15,right: 10,left: 10),
-                          child: TextFormField(
-                            validator: (val){
-                              return val.length > 8 ? null :'password not valid';
-                            },
-                            obscureText: true,
-                            controller: passwordTextEditing,
-                            style: simpleTextStyle(),
-                            decoration: textFieldInputDecoration('Password', 'Password'),
-                            keyboardType: TextInputType.visiblePassword,
-
-                          ),
+                      // Password text field
+                      Container(
+                        padding: EdgeInsets.only(top: 15, right: 10, left: 10),
+                        child: TextFormField(
+                          validator: (val) {
+                            return val.length > 8 ? null : 'password not valid';
+                          },
+                          obscureText: true,
+                          controller: _passwordTextEditingController,
+                          style: simpleTextStyle(),
+                          decoration:
+                              textFieldInputDecoration('Password', 'Password'),
+                          keyboardType: TextInputType.visiblePassword,
                         ),
-                        Container(
-                          padding: EdgeInsets.only(top: 15,right: 10,left: 10),
-                          child: TextFormField(
-                            validator: (val){
-                              return val.length > 11 ? null :'phone not valid';
-                            },
-                            controller: passwordTextEditing,
-                            style: simpleTextStyle(),
-                            decoration: textFieldInputDecoration('Phone', 'Phone'),
-                            keyboardType: TextInputType.phone,
-
-                          ),
+                      ),
+                      Container(
+                        padding: EdgeInsets.only(top: 15, right: 10, left: 10),
+                        child: TextFormField(
+                          validator: (val) {
+                            return val.length > 11 ? null : 'phone not valid';
+                          },
+                          controller: _phoneTextEditingController,
+                          style: simpleTextStyle(),
+                          decoration:
+                              textFieldInputDecoration('Phone', 'Phone'),
+                          keyboardType: TextInputType.phone,
                         ),
-                        Container(
+                      ),
+                      Container(
                           height: 80,
-                          padding: EdgeInsets.only(top: 15,right: 10,left: 10,bottom: 20),
+                          padding: EdgeInsets.only(
+                              top: 15, right: 10, left: 10, bottom: 20),
                           child: ListTile(
                             title: Text('Experience certificate',
-                                style: TextStyle(color: Colors.black,
-                                fontSize: 16,
-                                fontWeight:FontWeight.w600)),
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600)),
                             trailing: Icon(Icons.camera_enhance),
-                            onTap: (){},
-                          )
+                            onTap: () {},
+                          )),
+
+                      ListTile(
+                        title: Text(
+                          'Gender',
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 20.0,
+                              fontWeight: FontWeight.bold),
                         ),
-
-
-                        ListTile(
-                          title: Text(
-                            'Gender',
-                            style: TextStyle(color: Colors.black, fontSize: 20.0, fontWeight: FontWeight.bold),
-                          ),
-                          subtitle: Text(
-                            gender,
-                            style: TextStyle(color: Colors.grey, fontSize: 15.0, fontWeight: FontWeight.bold),
-                          ),
-                          trailing: PopupMenuButton(
-                            icon: Icon(Icons.arrow_downward),
-                            itemBuilder: (BuildContext context){
-                              return <PopupMenuEntry<String>>[
-                                PopupMenuItem(
-                                  child: Text(
-                                    'Male',
-                                    style: TextStyle(color: Colors.grey, fontSize: 15.0, fontWeight: FontWeight.bold),
-                                  ),
-                                  value: 'Male',
-                                ),
-                                PopupMenuItem(
-                                  child: Text(
-                                    'Female',
-                                    style: TextStyle(color: Colors.grey, fontSize: 15.0, fontWeight: FontWeight.bold),
-                                  ),
-                                  value: 'Female',
-                                ),
-                              ];
-                            },
-                            onSelected: (value) {
-                              setState(() {
-                                gender = value;
-                              });
-                            },
-                          ),
+                        subtitle: Text(
+                          gender,
+                          style: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 15.0,
+                              fontWeight: FontWeight.bold),
                         ),
-
-
-
-                      ],
-                    ),
+                        trailing: PopupMenuButton(
+                          icon: Icon(Icons.arrow_downward),
+                          itemBuilder: (BuildContext context) {
+                            return <PopupMenuEntry<String>>[
+                              PopupMenuItem(
+                                child: Text(
+                                  'Male',
+                                  style: TextStyle(
+                                      color: Colors.grey,
+                                      fontSize: 15.0,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                value: 'Male',
+                              ),
+                              PopupMenuItem(
+                                child: Text(
+                                  'Female',
+                                  style: TextStyle(
+                                      color: Colors.grey,
+                                      fontSize: 15.0,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                value: 'Female',
+                              ),
+                            ];
+                          },
+                          onSelected: (value) {
+                            setState(() {
+                              gender = value;
+                            });
+                          },
+                        ),
+                      ),
+                    ],
                   ),
-
+                ),
 
 //                  SizedBox(height: 20),
 //
@@ -167,71 +183,66 @@ class _SignUpDoctorState extends State<SignUpDoctor> {
 
 //                  SizedBox(height: 25),
 
-                  //Sign button
-                  InkWell(
-                    child: Container(
-                      margin: EdgeInsets.only(right: 10,left: 10),
-                      width: MediaQuery.of(context).size.width,
-                      padding: EdgeInsets.symmetric(vertical: 15,),
-                      decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                              colors: [
-                                Color(0xff007EF4),
-                                Color(0xff123C9E)
-                              ]
-                          ),
-                          borderRadius: BorderRadius.circular(26)
-                      ),
-                      child: Center(child: Text('Sign Up',style: simpleTextStyle())),
-                    ),
-                    onTap: (){
-                      validate();
-//                 signIn();
-                    },
-                  ),
-
-                  SizedBox(height: 10),
-                  //Sign with goggle button
-                  Container(
-                    margin: EdgeInsets.only(right: 10,left: 10),
+                //Sign button
+                InkWell(
+                  child: Container(
+                    margin: EdgeInsets.only(right: 10, left: 10),
                     width: MediaQuery.of(context).size.width,
-                    padding: EdgeInsets.symmetric(vertical: 15),
+                    padding: EdgeInsets.symmetric(
+                      vertical: 15,
+                    ),
                     decoration: BoxDecoration(
                         gradient: LinearGradient(
-                            colors: [
-                              Color(0xff123C9E),
-                              Color(0xff007EF4)
-                            ]
-                        ),
-                        color: Colors.blue,
-                        borderRadius: BorderRadius.circular(26)
-                    ),
-                    child: Center(child: Text('Sign up with Google')),
+                            colors: [Color(0xff007EF4), Color(0xff123C9E)]),
+                        borderRadius: BorderRadius.circular(26)),
+                    child: Center(
+                        child: Text('Sign Up', style: simpleTextStyle())),
                   ),
-                  SizedBox(height: 15),
+                  onTap: () async {
 
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text('have account?',style: simpleTextStyle()),
-                      InkWell(
-                        child: Text('Sign in now',style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 15,
-                            decoration: TextDecoration.underline
-                        )),
-                        onTap: (){
+                     validate();
+                    await Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => MainScreen()));
+
+//                 signIn();
+                  },
+                ),
+
+                // SizedBox(height: 10),
+                // ///Sign with goggle button
+                // Container(
+                //   margin: EdgeInsets.only(right: 10, left: 10),
+                //   width: MediaQuery.of(context).size.width,
+                //   padding: EdgeInsets.symmetric(vertical: 15),
+                //   decoration: BoxDecoration(
+                //       gradient: LinearGradient(
+                //           colors: [Color(0xff123C9E), Color(0xff007EF4)]),
+                //       color: Colors.blue,
+                //       borderRadius: BorderRadius.circular(26)),
+                //   child: Center(child: Text('Sign up with Google')),
+                // ),
+                SizedBox(height: 15),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text('have account?', style: simpleTextStyle()),
+                    InkWell(
+                      child: Text('Sign in now',
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 15,
+                              decoration: TextDecoration.underline)),
+                      onTap: () {
 //                     widget.toggle();
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => SignIn())
-                          );
-                        },
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) => SignIn()));
+                      },
+                    ),
+                  ],
+                ),
+              ],
+            ),
 //            ),
           ],
         ),
@@ -239,5 +250,3 @@ class _SignUpDoctorState extends State<SignUpDoctor> {
     );
   }
 }
-
-

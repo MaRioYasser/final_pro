@@ -1,4 +1,3 @@
-import 'file:///E:/Porject/final_pro/first_version/lib/doctor/doctorDetail.dart';
 import 'package:first_version/doctor/doctorList.dart';
 import 'package:first_version/widget/widget.dart';
 import 'package:flutter/material.dart';

@@ -1,3 +1,8 @@
+import 'package:first_version/Screens/mainScreen.dart';
+import 'package:first_version/chat/helper/authenticate.dart';
+import 'package:first_version/chat/helper/helperfunctions.dart';
+import 'package:first_version/chat/views/chatrooms.dart';
+import 'package:first_version/chat/views/signin.dart';
 import 'package:first_version/widget/widget.dart';
 import 'package:flutter/material.dart';
 
@@ -10,7 +15,20 @@ class _DoctorDetailState extends State<DoctorDetail> {
   @override
 
   TextEditingController DoctorMessge = TextEditingController();
+  bool userIsLoggedIn;
 
+  @override
+  void initState() {
+    getLoggedInState();
+    super.initState();
+  }
+  getLoggedInState() async {
+    await HelperFunctions.getUserLoggedInSharedPreference().then((value) {
+      setState(() {
+        userIsLoggedIn = value;
+      });
+    });
+  }
 
   Widget build(BuildContext context) {
     return Scaffold(
@@ -126,27 +144,27 @@ class _DoctorDetailState extends State<DoctorDetail> {
               ),
               SizedBox(height: 15),
 
-              InkWell(
-                child: Container(
-                  margin: EdgeInsets.only(right: 10,left: 10),
-                  width: MediaQuery.of(context).size.width,
-                  padding: EdgeInsets.symmetric(vertical: 15,),
-                  decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                          colors: [
-                            Color(0xff007EF4),
-                            Colors.lightBlueAccent[400]
-                          ]
-                      ),
-                      borderRadius: BorderRadius.circular(26)
-                  ),
-                  child: Center(child: Text('Book Now ',style: simpleTextStyle())),
-                ),
-                onTap: (){
-                 // validate();
-//                 signIn();
-                },
-              ),
+//               InkWell(
+//                 child: Container(
+//                   margin: EdgeInsets.only(right: 10,left: 10),
+//                   width: MediaQuery.of(context).size.width,
+//                   padding: EdgeInsets.symmetric(vertical: 15,),
+//                   decoration: BoxDecoration(
+//                       gradient: LinearGradient(
+//                           colors: [
+//                             Color(0xff007EF4),
+//                             Colors.lightBlueAccent[400]
+//                           ]
+//                       ),
+//                       borderRadius: BorderRadius.circular(26)
+//                   ),
+//                   child: Center(child: Text('Book Now ',style: simpleTextStyle())),
+//                 ),
+//                 onTap: (){
+//                  // validate();
+// //                 signIn();
+//                 },
+//               ),
               SizedBox(height: 14),
 
               InkWell(
@@ -165,12 +183,19 @@ class _DoctorDetailState extends State<DoctorDetail> {
                   ),
                   child: Center(child: Text('Chat Doctor',style: simpleTextStyle())),
                 ),
-                onTap: (){
-                  // validate();
-//                 signIn();
-                },
-              ),
-
+                  onTap: () {
+                    userIsLoggedIn != null ?  userIsLoggedIn ? Navigator.push(context,
+                        MaterialPageRoute(builder: (context) =>ChatRoom())) : Navigator.push(context,
+                        MaterialPageRoute(builder: (context) =>Authenticate()))
+                        : Container(
+                      child: Center(
+                        child: Authenticate(),
+                      ),
+                    );
+                    // Navigator.push(context,
+                    //     MaterialPageRoute(builder: (context) => Authenticate()));
+                  }
+                  ),
             ],
           ),
         )
